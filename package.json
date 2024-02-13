@@ -24,6 +24,7 @@
     "@babel/core": "^7.23.9",
     "@babel/node": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "prisma": "^5.9.1"
   }
 }
