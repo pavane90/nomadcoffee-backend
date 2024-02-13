@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/pavane90/nomadcoffee-backend#readme",
   "dependencies": {
+    "@prisma/client": "^5.9.1",
     "apollo-server": "^2.25.2",
     "graphql": "^15.4.0"
   },
