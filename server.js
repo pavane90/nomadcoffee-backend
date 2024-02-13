@@ -3,6 +3,7 @@ import { ApolloServer, gql } from "apollo-server";
 
 const client = new PrismaClient();
 
+//typeDefs로 스키마 정의
 const typeDefs = gql`
   type Movie {
     id: Int!
@@ -18,15 +19,19 @@ const typeDefs = gql`
   }
   type Mutation {
     createMovie(title: String!, year: Int!, genre: String): Movie
-    deleteMovie(id: String!): Boolean
+    deleteMovie(id: Int!): Movie
+    updateMovie(id: Int!, year: Int!): Movie
   }
 `;
 
+//resolvers로 데이터에 접근
 const resolvers = {
+  //query
   Query: {
     movies: () => client.movie.findMany(),
-    movie: (_, { id }) => ({ title: "Hello", year: 2021 }),
+    movie: (_, { id }) => client.movie.findUnique({ where: { id } }),
   },
+  //add, update, delete
   Mutation: {
     createMovie: (_, { title, year, genre }) =>
       client.movie.create({
@@ -36,9 +41,9 @@ const resolvers = {
           genre,
         },
       }),
-    deleteMovie: (_, { id }) => {
-      return true;
-    },
+    deleteMovie: (_, { id }) => client.movie.delete({ where: { id } }),
+    updateMovie: (_, { id, year }) =>
+      client.movie.update({ where: { id }, data: { year } }),
   },
 };
 const server = new ApolloServer({
