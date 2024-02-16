@@ -1,3 +1,4 @@
+import { createWriteStream } from "fs";
 import bcrypt from "bcrypt";
 import client from "../../client";
 import { protectedResolver } from "../users.utils";
@@ -15,13 +16,22 @@ const resolverFn = async (
   },
   { loggedInUser }
 ) => {
+  let convertedAvatarUrl = null;
+  if (avatarURL) {
+    const { filename, createReadStream } = await avatarURL;
+    const newFilename = `${loggedInUser.id}-${Date.now()}-${filename}`;
+    const readStream = createReadStream();
+    const writeStream = createWriteStream(
+      process.cwd() + "/uploads/" + newFilename
+    );
+    readStream.pipe(writeStream);
+    convertedAvatarUrl = `http://localhost:4000/static/${newFilename}`;
+  }
+
   let uglyPassword = null;
   if (newPassword) {
     uglyPassword = await bcrypt.hash(newPassword, 10);
   }
-
-  //만약 동일한 이메일이나 유저네임을 쓰려고 할 경우 에러처리를 해줘야할듯
-
   const updatedUser = await client.user.update({
     where: {
       id: loggedInUser.id,
@@ -31,9 +41,9 @@ const resolverFn = async (
       email,
       name,
       location,
-      avatarURL,
       githubUsername,
       ...(uglyPassword && { password: uglyPassword }),
+      ...(convertedAvatarUrl && { avatarURL: convertedAvatarUrl }),
     },
   });
   if (updatedUser.id) {

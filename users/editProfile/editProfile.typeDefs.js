@@ -8,7 +8,7 @@ export default gql`
       name: String
       location: String
       password: String
-      avatarURL: String
+      avatarURL: Upload
       githubUsername: String
     ): CommonResponse
   }
