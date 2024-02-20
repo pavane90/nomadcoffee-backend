@@ -2,7 +2,35 @@ import client from "../client";
 
 export default {
   User: {
-    totalFollowing: ({ id }) =>
+    followers: ({ id }, { lastId }, { client }) =>
+      client.user.findMany({
+        where: {
+          following: {
+            some: {
+              id,
+            },
+          },
+        },
+        take: 5,
+        skip: lastId ? 1 : 0,
+        ...(lastId && { cursor: { id: lastId } }),
+      }),
+
+    followings: ({ id }, { lastId }, { client }) =>
+      client.user.findMany({
+        where: {
+          followers: {
+            some: {
+              id,
+            },
+          },
+        },
+        take: 5,
+        skip: lastId ? 1 : 0,
+        ...(lastId && { cursor: { id: lastId } }),
+      }),
+
+    totalFollowing: ({ id }, _, { client }) =>
       client.user.count({
         where: {
           followers: {
@@ -12,7 +40,8 @@ export default {
           },
         },
       }),
-    totalFollowers: ({ id }) =>
+
+    totalFollowers: ({ id }, _, { client }) =>
       client.user.count({
         where: {
           following: {
@@ -22,27 +51,28 @@ export default {
           },
         },
       }),
-    isMe: ({ id }, _, { loggedInUser }) => {
+
+    isFollowing: async ({ id }, _, { client, loggedInUser }) => {
       if (!loggedInUser) {
         return false;
       }
-      return id === loggedInUser.id;
-    },
-    isFollowing: async ({ id }, _, { loggedInUser }) => {
-      if (!loggedInUser) {
-        return false;
-      }
-      const exists = await client.user.count({
+      const exist = await client.user.count({
         where: {
-          username: loggedInUser.username,
-          following: {
+          followers: {
             some: {
-              id,
+              id: loggedInUser.id,
             },
           },
         },
       });
-      return Boolean(exists);
+      return Boolean(exist);
+    },
+
+    isMe: ({ id }, _, { client, loggedInUser }) => {
+      if (!loggedInUser) {
+        return false;
+      }
+      return id === loggedInUser.id;
     },
   },
 };
