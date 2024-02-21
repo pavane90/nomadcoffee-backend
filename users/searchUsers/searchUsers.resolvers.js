@@ -1,5 +1,3 @@
-import client from "../../client";
-
 export default {
   Query: {
     searchUsers: async (_, { keyword, page }, { client }) => {

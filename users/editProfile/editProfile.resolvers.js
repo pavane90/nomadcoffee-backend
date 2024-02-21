@@ -27,7 +27,6 @@ export default {
           const writeStream = createWriteStream(
             process.cwd() + "/uploads/" + newFilename
           );
-          console.log(newFilename);
           readStream.pipe(writeStream);
           avatarURL = `http://localhost:4000/static/${newFilename}`;
         }
