@@ -4,9 +4,11 @@
   "description": "",
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
-    "dev": "nodemon --exec babel-node server --delay 2",
+    "dev": "nodemon --exec babel-node src/server --delay 2",
     "migrate": "npx prisma migrate dev --preview-feature",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "build": "babel src --out-dir build",
+    "start": "node build/server"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/pavane90/nomadcoffee-backend#readme",
   "dependencies": {
+    "@babel/cli": "^7.23.9",
     "@prisma/client": "^2.15.0",
     "apollo-server": "^2.19.1",
     "apollo-server-express": "^2.19.2",
